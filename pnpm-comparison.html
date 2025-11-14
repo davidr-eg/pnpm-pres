@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNPM - Performant Package Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <section class="title-section">
+        <div class="title-content">
+            <h1 class="main-title">PNPM</h1>
+            <h3 class="subtitle">Performant Package Manager - Tech Radar 2025 "Adopt"</h3>
+            
+            <div class="benefits">
+                <div class="benefit">
+                    <h4 class="benefit-title">Fast</h4>
+                    <p class="benefit-description">pnpm is up to 2x faster than npm</p>
+                </div>
+                <div class="benefit">
+                    <h4 class="benefit-title">Small</h4>
+                    <p class="benefit-description">Shared package directory prevents duplicates on your machine</p>
+                </div>
+                <div class="benefit">
+                    <h4 class="benefit-title">Strict</h4>
+                    <p class="benefit-description">No phantom dependencies</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h1>Dependency Structure Comparison</h1>
+        
+        <div class="description">
+            <p>Traditional <b>npm</b> (v3+) and <b>yarn</b> create a flat structure where dependencies get "hoisted" to the top-level <code>node_modules</code> folder. This means if your project depends on package A, and package A depends on package B, both A and B end up at the same level in <code>node_modules</code>.</p>
+            <p><b>pnpm</b> instead creates a nested structure using a two-layer linking system. Your code uses symlinks to access a hidden <code>.pnpm</code> folder with a precise structure that mirrors the dependency tree. This <code>.pnpm</code> folder then uses hard links to a global content-addressable store (<code>~/.pnpm-store/</code>), so actual package files only exist once on your machine.</p>
+        </div>
+        
+        <div class="comparison">
+            <!-- npm/yarn Column -->
+            <div class="package-manager">
+                <div class="pm-title npm-title">
+                    npm / yarn
+                    <span class="badge">Flat Structure</span>
+                </div>
+                
+                <div class="structure">
+                    <div class="folder-name">
+                        <span class="icon folder-icon"></span>
+                        <strong>node_modules/</strong>
+                    </div>
+                    <div class="folder">
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">express/</span>
+                            <span class="arrow">← actual files</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">cookie/</span>
+                            <span class="arrow">← hoisted!</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">react/</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">lodash/</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">webpack/</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="phantom">mime-types/</span>
+                            <span class="arrow">← phantom dep!</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="warning">
+                    ⚠️ <strong>Phantom Dependencies:</strong> Your code can import 'cookie' and 'mime-types' even though they're not in package.json
+                </div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">~250MB</div>
+                        <div class="stat-label">Per Project</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">2.5GB</div>
+                        <div class="stat-label">10 Projects</div>
+                    </div>
+                </div>
+                
+                <div class="structure">
+                    <strong>If you have 3 projects using React:</strong>
+                    <div class="folder">
+                        <div class="folder-name">
+                            <span class="icon folder-icon"></span>
+                            project1/node_modules/react/ <span class="actual-file">17MB</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon folder-icon"></span>
+                            project2/node_modules/react/ <span class="actual-file">17MB</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon folder-icon"></span>
+                            project3/node_modules/react/ <span class="actual-file">17MB</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #dc3545;">
+                        Total: 51MB for the same package! 🔴
+                    </div>
+                </div>
+            </div>
+            
+            <!-- pnpm Column -->
+            <div class="package-manager">
+                <div class="pm-title pnpm-title">
+                    pnpm
+                    <span class="badge">Non-flat + Links</span>
+                </div>
+                
+                <div class="structure">
+                    <div class="folder-name">
+                        <span class="icon folder-icon"></span>
+                        <strong>node_modules/</strong>
+                    </div>
+                    <div class="folder">
+                        <div class="folder-name">
+                            <span class="icon link-icon"></span>
+                            <span class="symlink">express/</span>
+                            <span class="arrow">→ .pnpm/express@4.18.0/...</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon link-icon"></span>
+                            <span class="symlink">react/</span>
+                            <span class="arrow">→ .pnpm/react@18.2.0/...</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon link-icon"></span>
+                            <span class="symlink">webpack/</span>
+                            <span class="arrow">→ .pnpm/webpack@5.89.0/...</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon folder-icon"></span>
+                            <strong>.pnpm/</strong> <span class="arrow">(hidden)</span>
+                        </div>
+                        <div class="folder">
+                            <div class="folder-name">
+                                <span class="icon folder-icon"></span>
+                                express@4.18.0/node_modules/
+                            </div>
+                            <div class="folder">
+                                <div class="folder-name">
+                                    <span class="icon link-icon"></span>
+                                    <span class="hardlink">express/</span>
+                                    <span class="arrow">→ store</span>
+                                </div>
+                                <div class="folder-name">
+                                    <span class="icon link-icon"></span>
+                                    <span class="hardlink">cookie/</span>
+                                    <span class="arrow">→ store</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="success">
+                    ✅ <strong>No Phantom Dependencies:</strong> Can only import packages explicitly listed in package.json
+                </div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">~100MB</div>
+                        <div class="stat-label">Per Project</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">~300MB</div>
+                        <div class="stat-label">10 Projects</div>
+                    </div>
+                </div>
+                
+                <div class="global-store">
+                    <div class="store-title">
+                        <span class="icon store-icon"></span>
+                        Global Store (~/.pnpm-store/)
+                    </div>
+                    <div class="folder">
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">react@18.2.0</span>
+                            <span class="arrow">← stored once!</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">express@4.18.0</span>
+                        </div>
+                        <div class="folder-name">
+                            <span class="icon package-icon"></span>
+                            <span class="actual-file">lodash@4.17.21</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; color: #28a745;">
+                        All projects hard-link to this single store! 🟢
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h1>Using pnpm</h1>
+        
+        <div class="usage-section">
+            <div class="usage-card">
+                <h2 class="usage-title">Installation</h2>
+                <div class="code-block">
+                    <code>npm install -g pnpm</code>
+                </div>
+                <p class="usage-description">Install pnpm globally using npm, or use other methods like Homebrew on macOS.</p>
+            </div>
+            
+            <div class="usage-card">
+                <h2 class="usage-title">Basic Commands</h2>
+                <div class="command-list">
+                    <div class="command-item">
+                        <code class="command">pnpm install</code>
+                        <span class="command-desc">Install dependencies</span>
+                    </div>
+                    <div class="command-item">
+                        <code class="command">pnpm add &lt;package&gt;</code>
+                        <span class="command-desc">Add a package</span>
+                    </div>
+                    <div class="command-item">
+                        <code class="command">pnpm remove &lt;package&gt;</code>
+                        <span class="command-desc">Remove a package</span>
+                    </div>
+                    <div class="command-item">
+                        <code class="command">pnpm run &lt;script&gt;</code>
+                        <span class="command-desc">Run a script</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="usage-card">
+                <h2 class="usage-title">Migration from npm/yarn</h2>
+                <div class="migration-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <p>Delete <code>node_modules</code> and <code>package-lock.json</code> (or <code>yarn.lock</code>)</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <p>Run <code>pnpm install</code> to create <code>pnpm-lock.yaml</code></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <p>Update CI/CD scripts to use pnpm commands</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="usage-card">
+                <h2 class="usage-title">Key Features</h2>
+                <ul class="feature-list">
+                    <li>✅ Works with any Node.js project</li>
+                    <li>✅ Compatible with npm registry</li>
+                    <li>✅ Supports monorepos with workspaces</li>
+                    <li>✅ Built-in support for peer dependencies</li>
+                    <li>✅ Automatic pruning of unused packages</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h1>Considerations & Risks</h1>
+        
+        <div class="risks-section">
+            <div class="risk-card warning-card">
+                <h2 class="risk-title">⚠️ Mixed Package Manager Usage</h2>
+                <p class="risk-description">If another developer runs <code>npm install</code> or <code>yarn install</code> on a pnpm project:</p>
+                <ul class="risk-list">
+                    <li>A <code>node_modules</code> folder with a different structure will be created</li>
+                    <li>Both <code>pnpm-lock.yaml</code> and <code>package-lock.json</code>/<code>yarn.lock</code> will exist</li>
+                    <li>Dependencies may resolve differently, causing inconsistent behavior</li>
+                    <li>The project size will increase significantly due to duplicate packages</li>
+                </ul>
+                <div class="mitigation">
+                    <strong>Mitigation:</strong> Add a <code>.npmrc</code> file with <code>engine-strict=true</code> and specify <code>packageManager</code> in <code>package.json</code>
+                </div>
+            </div>
+            
+            <div class="risk-card">
+                <h2 class="risk-title">🔍 Learning Curve & Team Adoption</h2>
+                <ul class="risk-list">
+                    <li>Team members need to install pnpm and learn new commands</li>
+                    <li>Some developers may be unfamiliar with pnpm's strict dependency resolution</li>
+                    <li>CI/CD pipelines need to be updated to use pnpm</li>
+                    <li>Documentation and onboarding materials need updates</li>
+                </ul>
+            </div>
+            
+            <div class="risk-card">
+                <h2 class="risk-title">🔧 Tooling & Ecosystem Compatibility</h2>
+                <ul class="risk-list">
+                    <li>Some older tools may not work well with pnpm's symlink structure</li>
+                    <li>Certain build tools may need configuration adjustments</li>
+                    <li>Docker builds may require different strategies (copying <code>.pnpm</code> folder)</li>
+                    <li>Some npm scripts that directly access <code>node_modules</code> may break</li>
+                </ul>
+            </div>
+            
+        </div>
+        
+        <h1>Preventing Mixed Package Manager Usage</h1>
+        
+        <div class="prevention-section">
+            <div class="prevention-card">
+                <div class="method-header">
+                    <span class="method-number">1</span>
+                    <h2 class="prevention-title">Use only-allow Package</h2>
+                </div>
+                
+                <p class="prevention-description">The <code>only-allow</code> package forces developers to use a specific package manager by checking which command is being run.</p>
+                
+                <div class="setup-steps">
+                    <div class="setup-step">
+                        <h3>Installation</h3>
+                        <div class="code-block">
+                            <code>pnpm add -D only-allow</code>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>Add to package.json</h3>
+                        <div class="code-block">
+<pre><code>{
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>What it does</h3>
+                        <p>If someone runs <code>npm install</code> or <code>yarn install</code>, they'll see:</p>
+                        <div class="code-block error-block">
+<pre><code>Use "pnpm install" for installation in this project
+
+If you don't have pnpm, install it via "npm i -g pnpm"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prevention-card">
+                <div class="method-header">
+                    <span class="method-number">2</span>
+                    <h2 class="prevention-title">Configure .npmrc</h2>
+                </div>
+                
+                <p class="prevention-description">Create a <code>.npmrc</code> file in your project root to enforce package manager usage through Node.js settings.</p>
+                
+                <div class="setup-steps">
+                    <div class="setup-step">
+                        <h3>Create .npmrc file</h3>
+                        <div class="code-block">
+<code>engine-strict=true</code>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>Update package.json</h3>
+                        <div class="code-block">
+<pre><code>{
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0",
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
+  },
+  "packageManager": "pnpm@9.0.0"
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>What it does</h3>
+                        <p>With <code>engine-strict=true</code>, npm/yarn will fail with an error if they don't meet the engine requirements. The <code>packageManager</code> field is also recognized by Corepack.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prevention-card">
+                <div class="method-header">
+                    <span class="method-number">3</span>
+                    <h2 class="prevention-title">Pre-commit Hooks (Husky)</h2>
+                </div>
+                
+                <p class="prevention-description">Use Git hooks to prevent commits that include lock files from other package managers.</p>
+                
+                <div class="setup-steps">
+                    <div class="setup-step">
+                        <h3>Install Husky</h3>
+                        <div class="code-block">
+<pre><code>pnpm add -D husky
+pnpm exec husky init</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>Create pre-commit hook</h3>
+                        <p>Edit <code>.husky/pre-commit</code>:</p>
+                        <div class="code-block">
+<pre><code>#!/bin/sh
+
+if [ -f "package-lock.json" ]; then
+  echo "❌ package-lock.json detected!"
+  echo "Please use pnpm instead of npm"
+  exit 1
+fi
+
+if [ -f "yarn.lock" ]; then
+  echo "❌ yarn.lock detected!"
+  echo "Please use pnpm instead of yarn"
+  exit 1
+fi</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="setup-step">
+                        <h3>Add to .gitignore</h3>
+                        <div class="code-block">
+<pre><code># Package manager locks (keep only pnpm)
+package-lock.json
+yarn.lock</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recommendation-box">
+            <h2>🎯 Recommended Approach</h2>
+            <p>Use <strong>all three methods together</strong> for maximum protection:</p>
+            <ol class="recommendation-list">
+                <li><code>only-allow</code> provides immediate feedback when someone uses the wrong command</li>
+                <li><code>.npmrc</code> configuration works as a backup and enables Corepack integration</li>
+                <li>Pre-commit hooks prevent wrong lock files from being committed to the repository</li>
+            </ol>
+            <p>This layered approach ensures your team consistently uses pnpm without friction.</p>
+        </div>
+        
+        <h1>Common Questions</h1>
+        
+        <div class="qa-card">
+            <h2 class="qa-question">Can I still use <code>npm run</code>?</h2>
+            <div class="qa-answer">
+                <p><b>Yes!</b> You can still use <code>npm run &lt;script&gt;</code> even with pnpm installed - <b>as long as your script does not modify the dependencies in any way.</b></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
