@@ -10,12 +10,13 @@
     <section class="title-section">
         <div class="title-content">
             <h1 class="main-title">PNPM</h1>
-            <h3 class="subtitle">Performant Package Manager - Tech Radar 2025 "Adopt"</h3>
+            <h3 class="subtitle">Performant Node Package Manager - Recommended for Adoption (Tech Radar 2025)</h3>
             
             <div class="benefits">
                 <div class="benefit">
                     <h4 class="benefit-title">Fast</h4>
-                    <p class="benefit-description">pnpm is up to 2x faster than npm</p>
+                    <p class="benefit-description">"pnpm is up to 2x faster than npm"</p>
+                    <p class="benefit-description"><b>Current project:</b> npm: 23s | pnpm: 6s/4s</p>
                 </div>
                 <div class="benefit">
                     <h4 class="benefit-title">Small</h4>
@@ -23,7 +24,7 @@
                 </div>
                 <div class="benefit">
                     <h4 class="benefit-title">Strict</h4>
-                    <p class="benefit-description">No phantom dependencies</p>
+                    <p class="benefit-description">Prevents "phantom dependencies"<br>Only explicitly declared packages can be imported</p>
                 </div>
             </div>
         </div>
@@ -222,6 +223,17 @@
                     <code>npm install -g pnpm</code>
                 </div>
                 <p class="usage-description">Install pnpm globally using npm, or use other methods like Homebrew on macOS.</p>
+                <h2 class="usage-subtitle">Manage pnpm</h2>
+                <div class="command-list">
+                    <div class="command-item">
+                        <code class="command">pnpm store prune</code>
+                        <span class="command-desc">Remove unreferenced packages from store</span>
+                    </div>
+                    <div class="command-item">
+                        <code class="command">pnpm store path</code>
+                        <span class="command-desc">Show store location</span>
+                    </div>
+                </div>
             </div>
             
             <div class="usage-card">
@@ -280,8 +292,105 @@
                     <li>✅ Automatic pruning of unused packages</li>
                 </ul>
             </div>
+
+            <div class="usage-card">
+                <h2 class="usage-title">Monorepo Support</h2>
+                <ul class="feature-list">
+                    <li>✅ Built-in workspace support with filtering</li>
+                    <li>✅ Run commands across multiple packages: <code>pnpm -r build</code></li>
+                    <li>✅ Shared dependencies across workspace packages</li>
+                    <li>✅ Better than npm workspaces or Lerna</li>
+                </ul>
+            </div>
+
+            <div class="usage-card">
+                <h2 class="usage-title">Production Benefits</h2>
+                <ul class="feature-list">
+                    <li>⚡ <code>--frozen-lockfile</code> ensures exact reproduction</li>
+                    <li>📦 40% smaller Docker images with better layer caching</li>
+                    <li>🚀 <code>pnpm deploy</code> creates minimal production builds</li>
+                    <li>🔒 No phantom dependencies = no production surprises</li>
+                    <li>💰 Faster CI builds = lower cloud costs</li>
+                </ul>
+                <div class="code-block">
+                    <code>pnpm install --frozen-lockfile --prod</code>
+                </div>
+                <p class="usage-description">Production installs are deterministic and exclude devDependencies entirely.</p>
+            </div>
         </div>
         
+        <h1>Production Deployment with pnpm</h1>
+
+        <div class="production-section">
+            <div class="prod-card">
+                <h2 class="prod-title">📦 The Build + Deploy Pattern</h2>
+                
+                <div class="build-deploy-explanation">                    
+                    <div class="command-explanation">
+                        <div class="command-block">
+                            <code>pnpm install --frozen-lockfile</code>
+                            <span class="command-purpose">→ Installs EXACT dependencies for BUILD time</span>
+                        </div>
+                        <div class="command-block">
+                            <code>pnpm build</code>
+                            <span class="command-purpose">→ Compiles YOUR code (TypeScript, React, etc.)</span>
+                        </div>
+                        <div class="command-block">
+                            <code>pnpm deploy --prod ./output</code>
+                            <span class="command-purpose">→ Optimizes NODE_MODULES (removes 70-80% bloat)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-section">
+                        <h4 class="benefit-header">🎯 The pnpm Deploy Magic</h4>
+                        <p>The command <code>pnpm deploy --prod ./output</code> creates a "perfect" production folder:</p>
+                        <ul class="deploy-benefits">
+                            <li>Strips out 70-80% of typical node_modules bloat</li>
+                            <li>Converts all symlinks to real files (critical for Docker)</li>
+                            <li>Removes every single dev dependency and their entire trees</li>
+                            <li>Eliminates test files, docs, and TypeScript sources from packages</li>
+                        </ul>
+                        <p><strong>Example:</strong> A Next.js app's node_modules went from 1.2GB to 280MB using pnpm deploy.</p>
+                    </div>
+
+                    <div class="deploy-note">
+                        <strong>Key insight:</strong> <code>--frozen-lockfile</code> ensures exact reproduction (CI fails fast if someone forgot to commit lock changes). <code>build</code> handles your code, <code>deploy</code> handles dependencies.
+                    </div>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <h2 class="prod-title">🚀 CI/CD & Docker Integration</h2>
+                
+                <div class="ci-docker-benefits">
+                    <h3 class="ci-platform">Why pnpm Excels in CI/CD Pipelines</h3>
+
+                    <div class="benefit-section">
+                        <h4 class="benefit-header">📦 Docker Layer Optimization</h4>
+                        <p>Traditional npm creates unpredictable node_modules structures - the same package.json can produce different layouts. This breaks Docker's layer caching.</p>
+                        <p>pnpm's deterministic structure means Docker can reliably cache dependency layers. When you rebuild, only changed layers get rebuilt.</p>
+                        <p><strong>The math:</strong> Base image (150MB) + pnpm deploy output (87MB) = 237MB total vs npm's typical 400MB+ images</p>
+                    </div>
+
+                    <div class="benefit-section">
+                        <h4 class="benefit-header">💾 Intelligent Caching Strategy</h4>
+                        <p>Unlike npm's massive cache folder, pnpm's content-addressable store (at <code>~/.pnpm-store</code>) can be safely shared across all CI jobs and branches. One package version = one storage location, regardless of which project uses it.</p>
+                        <p><strong>GitHub Actions tip:</strong> Cache the pnpm store path, not node_modules. This single cache works for ALL your repositories!</p>
+                    </div>
+
+                    <div class="benefit-section">
+                        <h4 class="benefit-header">🔄 Monorepo CI Superpowers</h4>
+                        <p>In monorepos, pnpm can detect which packages changed and build only those: <code>pnpm --filter "...{origin/main}..." build</code></p>
+                        <p>This means PRs that touch one service don't trigger builds for unrelated services. In a 20-service monorepo, this can cut CI time by 90%.</p>
+                    </div>
+                </div>
+                
+                <div class="ci-bottom-line">
+                    <strong>Bottom Line:</strong> pnpm turns CI/CD from a bottleneck into a competitive advantage. Faster builds, smaller artifacts, and deterministic deploys mean you ship features, not fixes.
+                </div>
+            </div>
+        </div>
+
         <h1>Considerations & Risks</h1>
         
         <div class="risks-section">

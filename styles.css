@@ -314,7 +314,7 @@ h3 {
 
 .usage-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
     margin-top: 30px;
     margin-bottom: 60px;
@@ -333,6 +333,14 @@ h3 {
     margin: 0 0 20px 0;
     border-bottom: 2px solid #667eea;
     padding-bottom: 10px;
+}
+
+.usage-subtitle {
+    color: #667eea;
+    font-size: 1.2em;
+    margin: 0 0 15px 0;
+    padding-bottom: 4px;
+    padding-top: 8px;
 }
 
 .code-block {
@@ -746,4 +754,172 @@ h3 {
     font-size: 0.9em;
     color: #d63384;
     border: 1px solid #e0e0e0;
+}
+
+.ci-docker-benefits {
+    margin-top: 20px;
+}
+
+.ci-platform {
+    color: #667eea;
+    font-size: 1.3em;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.benefit-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.benefit-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+}
+
+.benefit-header {
+    color: #333;
+    font-size: 1.2em;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.benefit-section p {
+    color: #555;
+    line-height: 1.7;
+    margin: 0 0 12px 0;
+}
+
+.benefit-section p:last-child {
+    margin-bottom: 0;
+}
+
+.benefit-section strong {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.benefit-section code {
+    background: rgba(102, 126, 234, 0.1);
+    color: #5a67d8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.95em;
+}
+
+.deploy-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.deploy-benefits li {
+    padding: 8px 0 8px 30px;
+    color: #555;
+    line-height: 1.6;
+    position: relative;
+}
+
+.deploy-benefits li::before {
+    content: "→";
+    position: absolute;
+    left: 10px;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.ci-bottom-line {
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 1.05em;
+    line-height: 1.6;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.ci-bottom-line strong {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+/* Make this single card take full width and stand out */
+.production-section {
+    display: block;
+}
+
+.production-section .prod-card {
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .production-section .prod-card {
+        padding: 25px;
+    }
+    
+    .benefit-section {
+        padding: 15px;
+    }
+    
+    .benefit-header {
+        font-size: 1.1em;
+    }
+}
+
+.build-deploy-explanation {
+    margin-top: 20px;
+}
+
+.command-explanation {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.command-block {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    gap: 15px;
+}
+
+.command-purpose {
+    color: #555;
+    font-size: 1.05em;
+}
+
+.deploy-subtitle {
+    color: #667eea;
+    font-size: 1.2em;
+    margin: 25px 0 15px 0;
+}
+
+.deploy-note {
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+    border-left: 3px solid #667eea;
+    border-radius: 6px;
+    line-height: 1.6;
+}
+
+.deploy-note strong {
+    color: #667eea;
 }
